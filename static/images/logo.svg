@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50" width="200" height="50">
+  <!-- Main Leaf Shape -->
+  <path d="M40,10 C55,5 70,15 75,25 C80,35 75,45 65,48 C55,51 40,45 30,35 C20,25 25,15 40,10 Z" fill="#4CAF50" />
+  
+  <!-- Leaf Vein -->
+  <path d="M40,10 C50,20 55,30 65,48" fill="none" stroke="#388E3C" stroke-width="1.5" />
+  
+  <!-- Small Leaf -->
+  <path d="M60,15 C65,12 70,15 72,18 C74,21 73,25 70,27 C67,29 62,27 58,24 C54,21 55,18 60,15 Z" fill="#8BC34A" />
+  
+  <!-- Text: Eco Volunteers -->
+  <text x="90" y="30" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#333333">Eco</text>
+  <text x="120" y="30" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#4CAF50">Volunteers</text>
+  
+  <!-- Tagline -->
+  <text x="90" y="42" font-family="Arial, sans-serif" font-size="8" fill="#666666">Preserving Nature Together</text>
+</svg>

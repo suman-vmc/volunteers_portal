@@ -1,0 +1,341 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Eco Volunteers{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-2 p-0">
+                <div class="admin-sidebar">
+                    <div class="p-3 text-white text-center mb-4">
+                        <h4 class="mb-1">Admin Dashboard</h4>
+                        <p class="mb-0 small">Welcome, {{ user.username }}</p>
+                    </div>
+                    
+                    <a href="{% url 'admin_dashboard' %}" class="admin-sidebar-link active">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="{% url 'admin_manage_camps' %}" class="admin-sidebar-link">
+                        <i class="fas fa-campground me-2"></i> Manage Camps
+                    </a>
+                    <a href="{% url 'admin_manage_volunteers' %}" class="admin-sidebar-link">
+                        <i class="fas fa-users me-2"></i> Manage Volunteers
+                    </a>
+                    <a href="{% url 'admin_manage_applications' %}" class="admin-sidebar-link">
+                        <i class="fas fa-clipboard-list me-2"></i> Applications
+                    </a>
+                    <a href="{% url 'admin_manage_testimonials' %}" class="admin-sidebar-link">
+                        <i class="fas fa-comment me-2"></i> Testimonials
+                    </a>
+                    <hr class="bg-light opacity-25 mx-3">
+                    <a href="{% url 'admin:index' %}" class="admin-sidebar-link" target="_blank">
+                        <i class="fas fa-tools me-2"></i> Django Admin
+                    </a>
+                    <a href="{% url 'home' %}" class="admin-sidebar-link">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Site
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-10">
+                <div class="admin-content">
+                    <div class="mb-4">
+                        <h1 class="mb-0">Dashboard</h1>
+                        <p class="text-muted">Overview of Eco Volunteers platform statistics</p>
+                    </div>
+                    
+                    <!-- Stats Cards -->
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="stats-card">
+                                <i class="fas fa-campground fa-2x text-primary mb-3"></i>
+                                <div class="stats-number">{{ total_camps }}</div>
+                                <div class="stats-label">Total Camps</div>
+                                <div class="mt-2 text-muted small">
+                                    {{ active_camps }} active camps
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="stats-card">
+                                <i class="fas fa-users fa-2x text-primary mb-3"></i>
+                                <div class="stats-number">{{ total_volunteers }}</div>
+                                <div class="stats-label">Registered Volunteers</div>
+                                <div class="mt-2 text-muted small">
+                                    <span class="text-success">
+                                        <i class="fas fa-arrow-up me-1"></i> 12%
+                                    </span>
+                                    from last month
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="stats-card">
+                                <i class="fas fa-clock fa-2x text-primary mb-3"></i>
+                                <div class="stats-number">{{ pending_applications }}</div>
+                                <div class="stats-label">Pending Applications</div>
+                                <div class="mt-2 text-muted small">
+                                    Require review
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="stats-card">
+                                <i class="fas fa-check-circle fa-2x text-primary mb-3"></i>
+                                <div class="stats-number">{{ approved_applications }}</div>
+                                <div class="stats-label">Approved Volunteers</div>
+                                <div class="mt-2 text-muted small">
+                                    Across all camps
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Applications & Popular Camps -->
+                    <div class="row">
+                        <!-- Applications by Status Chart -->
+                        <div class="col-xl-4 col-lg-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-3">Applications by Status</h4>
+                                    
+                                    <canvas id="applicationsChart" height="250" 
+                                            data-chart-data='{"Pending": {{ pending_applications }}, "Approved": {{ approved_applications }}, "Rejected": 5, "Waitlisted": 8}'></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- New Volunteers Chart -->
+                        <div class="col-xl-4 col-lg-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-3">New Volunteers (Last 6 Months)</h4>
+                                    
+                                    <canvas id="volunteersChart" height="250"
+                                            data-chart-data='{"labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"], "data": [12, 19, 15, 22, 30, 25]}'></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Popular Camps -->
+                        <div class="col-xl-4 col-lg-12 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-3">Popular Camps</h4>
+                                    
+                                    <div class="list-group list-group-flush">
+                                        {% for camp in popular_camps %}
+                                            <a href="{% url 'camp_detail' camp.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h6 class="mb-1">{{ camp.name }}</h6>
+                                                    <p class="text-muted mb-0 small">{{ camp.start_date|date:"M d, Y" }}</p>
+                                                </div>
+                                                <span class="badge bg-primary rounded-pill">{{ camp.application_count }} applicants</span>
+                                            </a>
+                                        {% empty %}
+                                            <div class="text-center py-3">
+                                                <p class="text-muted mb-0">No camp data available yet.</p>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity & Tasks -->
+                    <div class="row">
+                        <!-- Recent Activity -->
+                        <div class="col-lg-7 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-3">Recent Activity</h4>
+                                    
+                                    <div class="timeline">
+                                        <div class="timeline-item">
+                                            <div class="timeline-item-marker bg-primary"></div>
+                                            <div class="timeline-item-content">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <span class="fw-bold">New Application</span>
+                                                    <span class="text-muted small">2 hours ago</span>
+                                                </div>
+                                                <p class="mb-0">John Smith applied to "Coastal Cleanup Camp"</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="timeline-item">
+                                            <div class="timeline-item-marker bg-success"></div>
+                                            <div class="timeline-item-content">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <span class="fw-bold">Application Approved</span>
+                                                    <span class="text-muted small">5 hours ago</span>
+                                                </div>
+                                                <p class="mb-0">Emma Johnson was approved for "Forest Restoration Camp"</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="timeline-item">
+                                            <div class="timeline-item-marker bg-info"></div>
+                                            <div class="timeline-item-content">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <span class="fw-bold">New Camp Added</span>
+                                                    <span class="text-muted small">Yesterday</span>
+                                                </div>
+                                                <p class="mb-0">"Wildlife Conservation Camp" was added to the platform</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="timeline-item">
+                                            <div class="timeline-item-marker bg-warning"></div>
+                                            <div class="timeline-item-content">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <span class="fw-bold">New Testimonial</span>
+                                                    <span class="text-muted small">2 days ago</span>
+                                                </div>
+                                                <p class="mb-0">Michael Brown submitted a testimonial for "Urban Garden Initiative"</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="timeline-item">
+                                            <div class="timeline-item-marker bg-danger"></div>
+                                            <div class="timeline-item-content">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <span class="fw-bold">Camp Completed</span>
+                                                    <span class="text-muted small">3 days ago</span>
+                                                </div>
+                                                <p class="mb-0">"River Cleanup Camp" has been successfully completed</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tasks and Quick Actions -->
+                        <div class="col-lg-5 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-3">Tasks & Quick Actions</h4>
+                                    
+                                    <div class="mb-4">
+                                        <h6 class="text-uppercase text-muted small">Pending Tasks</h6>
+                                        
+                                        <div class="list-group list-group-flush">
+                                            <div class="list-group-item px-0">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="task1">
+                                                    <label class="form-check-label" for="task1">
+                                                        Review pending applications ({{ pending_applications }})
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="list-group-item px-0">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="task2">
+                                                    <label class="form-check-label" for="task2">
+                                                        Approve testimonials (3)
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="list-group-item px-0">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="task3">
+                                                    <label class="form-check-label" for="task3">
+                                                        Update camp details for summer season
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="list-group-item px-0">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="task4">
+                                                    <label class="form-check-label" for="task4">
+                                                        Send follow-up emails to recent participants
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h6 class="text-uppercase text-muted small">Quick Actions</h6>
+                                        
+                                        <div class="d-grid gap-2">
+                                            <a href="{% url 'admin_add_camp' %}" class="btn btn-outline-primary">
+                                                <i class="fas fa-plus me-2"></i> Add New Camp
+                                            </a>
+                                            <a href="{% url 'admin_manage_applications' %}?status=PENDING" class="btn btn-outline-warning">
+                                                <i class="fas fa-clipboard-check me-2"></i> Review Applications
+                                            </a>
+                                            <a href="{% url 'admin_manage_testimonials' %}" class="btn btn-outline-success">
+                                                <i class="fas fa-comment-dots me-2"></i> Manage Testimonials
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Initialize the dashboard charts when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        setupDashboardCharts();
+    });
+</script>
+{% endblock %}
+
+<style>
+    /* Timeline styling */
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding-bottom: 20px;
+    }
+    
+    .timeline-item:before {
+        content: '';
+        position: absolute;
+        left: -18px;
+        top: 0;
+        height: 100%;
+        width: 2px;
+        background-color: #e9ecef;
+    }
+    
+    .timeline-item:last-child:before {
+        height: 0;
+    }
+    
+    .timeline-item-marker {
+        position: absolute;
+        left: -24px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        top: 6px;
+    }
+    
+    .timeline-item-content {
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+        padding: 0.75rem;
+    }
+</style>
+{% endblock %}

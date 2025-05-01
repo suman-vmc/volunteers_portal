@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}Eco Volunteers - Environmental Volunteering Portal{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <h1>Make a Difference for Our Planet</h1>
+        <p>Join our community of environmental volunteers dedicated to conservation, sustainability, and protecting nature for future generations.</p>
+        <a href="{% url 'register' %}" class="btn btn-primary btn-lg">Become a Volunteer</a>
+        <a href="{% url 'camp_list' %}" class="btn btn-outline-light btn-lg ms-2">Explore Camps</a>
+    </div>
+</section>
+
+<!-- Mission Section -->
+<section class="section bg-light">
+    <div class="container">
+        <div class="section-title">
+            <h2>Our Mission</h2>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-seedling fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title">Conserve</h3>
+                        <p class="card-text">Working to conserve biodiversity and protect natural ecosystems through direct action and sustainable practices.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-hands-helping fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title">Educate</h3>
+                        <p class="card-text">Spreading environmental awareness and providing educational opportunities to create informed environmental stewards.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-globe-americas fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title">Sustain</h3>
+                        <p class="card-text">Developing and promoting sustainable solutions to environmental challenges for a healthier planet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Upcoming Camps Section -->
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <h2>Upcoming Environmental Camps</h2>
+        </div>
+        
+        <div class="row">
+            {% if upcoming_camps %}
+                {% for camp in upcoming_camps %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card camp-card h-100">
+                            {% if camp.image %}
+                                <img src="{{ camp.image.url }}" class="card-img-top" alt="{{ camp.name }}">
+                            {% else %}
+                                <img src="https://source.unsplash.com/800x500/?nature,environment" class="card-img-top" alt="Environmental camp">
+                            {% endif %}
+                            <div class="card-body">
+                                <h4 class="card-title">{{ camp.name }}</h4>
+                                <p class="camp-location"><i class="fas fa-map-marker-alt text-primary me-2"></i>{{ camp.location }}</p>
+                                <p class="card-text">{{ camp.description|truncatechars:100 }}</p>
+                                <div class="mb-3">
+                                    <span class="badge bg-primary">{{ camp.start_date|date:"M d, Y" }} to {{ camp.end_date|date:"M d, Y" }}</span>
+                                    <span class="badge bg-success ms-2">{{ camp.get_registered_volunteers_count }} / {{ camp.max_volunteers }} Volunteers</span>
+                                </div>
+                                <a href="{% url 'camp_detail' camp.id %}" class="btn btn-primary">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center">
+                    <p>No upcoming camps at the moment. Please check back soon!</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'camp_list' %}" class="btn btn-outline">View All Camps</a>
+        </div>
+    </div>
+</section>
+
+<!-- Impact Stats Section -->
+<section class="section bg-primary">
+    <div class="container">
+        <div class="section-title">
+            <h2 class="text-white">Our Environmental Impact</h2>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-3 col-6 mb-4 mb-md-0">
+                <div class="text-center text-white">
+                    <i class="fas fa-users fa-3x mb-3"></i>
+                    <h3>1,000+</h3>
+                    <p>Active Volunteers</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-6 mb-4 mb-md-0">
+                <div class="text-center text-white">
+                    <i class="fas fa-tree fa-3x mb-3"></i>
+                    <h3>25,000+</h3>
+                    <p>Trees Planted</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-6">
+                <div class="text-center text-white">
+                    <i class="fas fa-trash-alt fa-3x mb-3"></i>
+                    <h3>100+</h3>
+                    <p>Tons of Waste Collected</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-6">
+                <div class="text-center text-white">
+                    <i class="fas fa-map-marked-alt fa-3x mb-3"></i>
+                    <h3>50+</h3>
+                    <p>Environmental Camps</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <h2>Volunteer Testimonials</h2>
+        </div>
+        
+        <div class="row">
+            {% if testimonials %}
+                {% for testimonial in testimonials %}
+                    <div class="col-md-4 mb-4">
+                        <div class="testimonial h-100">
+                            <div class="testimonial-rating">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= testimonial.rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <p class="testimonial-content">"{{ testimonial.content }}"</p>
+                            <p class="testimonial-author">- {{ testimonial.volunteer.get_full_name }}</p>
+                            {% if testimonial.camp %}
+                                <p class="testimonial-camp">{{ testimonial.camp.name }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center">
+                    <p>No testimonials yet. Be the first to share your experience!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="section bg-light">
+    <div class="container text-center">
+        <h2 class="mb-4">Ready to Make a Difference?</h2>
+        <p class="lead mb-4">Join our community of environmental volunteers and help create a sustainable future.</p>
+        <a href="{% url 'register' %}" class="btn btn-primary btn-lg">Sign Up Today</a>
+        <a href="{% url 'camp_list' %}" class="btn btn-outline btn-lg ms-2">Browse Camps</a>
+    </div>
+</section>
+{% endblock %}

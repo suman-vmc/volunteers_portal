@@ -1,0 +1,359 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Eco Volunteers{% endblock %}
+
+{% block content %}
+<!-- Register Hero Section -->
+<section class="hero" style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://source.unsplash.com/1600x900/?nature,volunteer');">
+    <div class="container">
+        <h1>Become an Environmental Volunteer</h1>
+        <p>Join our community of environmental advocates and make a positive impact</p>
+    </div>
+</section>
+
+<!-- Registration Form Section -->
+<section class="section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h2 class="card-title text-center mb-4">Volunteer Registration</h2>
+                        
+                        <form method="post" novalidate>
+                            {% csrf_token %}
+                            
+                            {% if user_form.non_field_errors %}
+                                <div class="alert alert-danger">
+                                    {{ user_form.non_field_errors }}
+                                </div>
+                            {% endif %}
+                            
+                            <!-- User Account Information -->
+                            <div class="mb-4">
+                                <h4 class="mb-3">Account Information</h4>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ user_form.first_name.id_for_label }}" class="form-label">
+                                            First Name <span class="text-danger">*</span>
+                                        </label>
+                                        {{ user_form.first_name }}
+                                        {% if user_form.first_name.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ user_form.first_name.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ user_form.last_name.id_for_label }}" class="form-label">
+                                            Last Name <span class="text-danger">*</span>
+                                        </label>
+                                        {{ user_form.last_name }}
+                                        {% if user_form.last_name.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ user_form.last_name.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ user_form.email.id_for_label }}" class="form-label">
+                                        Email Address <span class="text-danger">*</span>
+                                    </label>
+                                    {{ user_form.email }}
+                                    {% if user_form.email.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ user_form.email.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ user_form.username.id_for_label }}" class="form-label">
+                                        Username <span class="text-danger">*</span>
+                                    </label>
+                                    {{ user_form.username }}
+                                    {% if user_form.username.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ user_form.username.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ user_form.password1.id_for_label }}" class="form-label">
+                                            Password <span class="text-danger">*</span>
+                                        </label>
+                                        {{ user_form.password1 }}
+                                        {% if user_form.password1.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ user_form.password1.errors }}
+                                            </div>
+                                        {% endif %}
+                                        <div class="form-text">
+                                            Your password must be at least 8 characters and can't be too common.
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ user_form.password2.id_for_label }}" class="form-label">
+                                            Confirm Password <span class="text-danger">*</span>
+                                        </label>
+                                        {{ user_form.password2 }}
+                                        {% if user_form.password2.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ user_form.password2.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Volunteer Profile Information -->
+                            <div class="mb-4">
+                                <h4 class="mb-3">Personal Information</h4>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ profile_form.phone.id_for_label }}" class="form-label">
+                                            Phone Number <span class="text-danger">*</span>
+                                        </label>
+                                        {{ profile_form.phone }}
+                                        {% if profile_form.phone.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ profile_form.phone.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ profile_form.date_of_birth.id_for_label }}" class="form-label">
+                                            Date of Birth <span class="text-danger">*</span>
+                                        </label>
+                                        {{ profile_form.date_of_birth }}
+                                        {% if profile_form.date_of_birth.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ profile_form.date_of_birth.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ profile_form.gender.id_for_label }}" class="form-label">
+                                        Gender
+                                    </label>
+                                    {{ profile_form.gender }}
+                                    {% if profile_form.gender.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ profile_form.gender.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ profile_form.address.id_for_label }}" class="form-label">
+                                        Address <span class="text-danger">*</span>
+                                    </label>
+                                    {{ profile_form.address }}
+                                    {% if profile_form.address.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ profile_form.address.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Emergency Contact Information -->
+                            <div class="mb-4">
+                                <h4 class="mb-3">Emergency Contact</h4>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ profile_form.emergency_contact.id_for_label }}" class="form-label">
+                                            Emergency Contact Name
+                                        </label>
+                                        {{ profile_form.emergency_contact }}
+                                        {% if profile_form.emergency_contact.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ profile_form.emergency_contact.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ profile_form.emergency_phone.id_for_label }}" class="form-label">
+                                            Emergency Contact Phone
+                                        </label>
+                                        {{ profile_form.emergency_phone }}
+                                        {% if profile_form.emergency_phone.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ profile_form.emergency_phone.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Volunteer Experience/Skills -->
+                            <div class="mb-4">
+                                <h4 class="mb-3">Volunteer Experience & Skills</h4>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ profile_form.skills.id_for_label }}" class="form-label">
+                                        Skills
+                                    </label>
+                                    {{ profile_form.skills }}
+                                    {% if profile_form.skills.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ profile_form.skills.errors }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text">
+                                        List any skills that might be relevant to environmental volunteering (e.g., gardening, wildlife identification, photography, teaching).
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ profile_form.experience.id_for_label }}" class="form-label">
+                                        Previous Volunteer Experience
+                                    </label>
+                                    {{ profile_form.experience }}
+                                    {% if profile_form.experience.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ profile_form.experience.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Terms and Privacy Policy Agreement -->
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="agree-terms" required>
+                                <label class="form-check-label" for="agree-terms">
+                                    I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms of Service</a> and <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">Privacy Policy</a> <span class="text-danger">*</span>
+                                </label>
+                                <div class="invalid-feedback">
+                                    You must agree to the terms to continue.
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">Register</button>
+                                <a href="{% url 'login' %}" class="btn btn-outline">Already have an account? Login</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Terms of Service Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Terms of Service</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>Eco Volunteers Terms of Service</h5>
+                <p>By registering as a volunteer with Eco Volunteers, you agree to the following terms:</p>
+                
+                <h6>1. Registration</h6>
+                <p>You agree to provide accurate, current, and complete information during the registration process and to update such information to keep it accurate, current, and complete.</p>
+                
+                <h6>2. Account Security</h6>
+                <p>You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.</p>
+                
+                <h6>3. Volunteer Responsibilities</h6>
+                <p>As a volunteer, you agree to:</p>
+                <ul>
+                    <li>Participate in camp activities to the best of your ability</li>
+                    <li>Follow all safety guidelines and instructions from camp leaders</li>
+                    <li>Respect other volunteers, staff, local communities, and the environment</li>
+                    <li>Adhere to the specific rules and guidelines of each camp</li>
+                </ul>
+                
+                <h6>4. Age Requirements</h6>
+                <p>Volunteers must be at least 18 years of age. Minors may participate with parental consent and appropriate supervision.</p>
+                
+                <h6>5. Cancellation</h6>
+                <p>If you need to cancel your participation in a camp, please notify us as soon as possible.</p>
+                
+                <h6>6. Liability</h6>
+                <p>Eco Volunteers is not liable for any injury, loss, or damage that may occur during volunteer activities. Volunteers participate at their own risk.</p>
+                
+                <h6>7. Media Release</h6>
+                <p>You grant Eco Volunteers permission to use photographs, videos, or other media featuring you during volunteer activities for promotional and educational purposes.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Privacy Policy Modal -->
+<div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="privacyModalLabel">Privacy Policy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>Eco Volunteers Privacy Policy</h5>
+                <p>This Privacy Policy describes how we collect, use, and handle your personal information when you use our services.</p>
+                
+                <h6>1. Information We Collect</h6>
+                <p>We collect personal information that you provide during registration, including:</p>
+                <ul>
+                    <li>Contact information (name, email, phone number)</li>
+                    <li>Demographic information (date of birth, gender)</li>
+                    <li>Emergency contact information</li>
+                    <li>Skills and volunteer experience</li>
+                </ul>
+                
+                <h6>2. How We Use Your Information</h6>
+                <p>We use your information to:</p>
+                <ul>
+                    <li>Manage your volunteer account</li>
+                    <li>Process camp applications</li>
+                    <li>Communicate with you about volunteer opportunities</li>
+                    <li>Ensure your safety during camp activities</li>
+                    <li>Improve our services</li>
+                </ul>
+                
+                <h6>3. Information Sharing</h6>
+                <p>We do not sell or rent your personal information to third parties. We may share your information with:</p>
+                <ul>
+                    <li>Camp organizers and leaders (only relevant information)</li>
+                    <li>Partner organizations (with your consent)</li>
+                    <li>When required by law</li>
+                </ul>
+                
+                <h6>4. Data Security</h6>
+                <p>We implement reasonable security measures to protect your personal information from unauthorized access, alteration, or disclosure.</p>
+                
+                <h6>5. Your Rights</h6>
+                <p>You have the right to:</p>
+                <ul>
+                    <li>Access and update your personal information</li>
+                    <li>Request deletion of your account</li>
+                    <li>Opt out of communications</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

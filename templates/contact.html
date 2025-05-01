@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - Eco Volunteers{% endblock %}
+
+{% block content %}
+<!-- Contact Hero Section -->
+<section class="hero" style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://source.unsplash.com/1600x900/?nature,contact');">
+    <div class="container">
+        <h1>Contact Us</h1>
+        <p>Have questions or want to get involved? We'd love to hear from you!</p>
+    </div>
+</section>
+
+<!-- Contact Information Section -->
+<section class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <h2>Get in Touch</h2>
+                <p class="lead mb-4">Feel free to reach out to us with any questions, suggestions, or if you're interested in partnering with Eco Volunteers.</p>
+                
+                <div class="mb-4">
+                    <h4><i class="fas fa-map-marker-alt text-primary me-2"></i> Our Office</h4>
+                    <p>SJR Complex <br>Koramangala 5th Block<br> Bangalore - 560095</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h4><i class="fas fa-phone text-primary me-2"></i> Phone</h4>
+                    <p>7654321098</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h4><i class="fas fa-envelope text-primary me-2"></i> Email</h4>
+                    <p>info@ecovolunteers.org</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h4><i class="fas fa-clock text-primary me-2"></i> Office Hours</h4>
+                    <p>Monday - Friday: 9:00 AM - 5:00 PM<br>
+                    Saturday: 10:00 AM - 2:00 PM<br>
+                    Sunday: Closed</p>
+                </div>
+                
+                <div class="social-links mt-4">
+                    <h4>Connect With Us</h4>
+                    <a href="#" class="btn btn-outline me-2"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="btn btn-outline me-2"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="btn btn-outline me-2"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="btn btn-outline me-2"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">Send Us a Message</h3>
+                        <form>
+                            <div class="form-group mb-3">
+                                <label for="name" class="form-label">Your Name</label>
+                                <input type="text" class="form-control" id="name" placeholder="Enter your name">
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" placeholder="Enter your email">
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="subject" class="form-label">Subject</label>
+                                <input type="text" class="form-control" id="subject" placeholder="Enter message subject">
+                            </div>
+                            
+                            <div class="form-group mb-4">
+                                <label for="message" class="form-label">Message</label>
+                                <textarea class="form-control" id="message" rows="5" placeholder="Enter your message"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-lg">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="section bg-light">
+    <div class="container">
+        <div class="section-title">
+            <h2>Frequently Asked Questions</h2>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title">How can I become a volunteer?</h4>
+                        <p class="card-text">To become a volunteer, you can simply register on our website, create your profile, and browse available environmental camps to apply for. Once your application is approved, you'll be ready to participate!</p>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title">Do I need prior experience to volunteer?</h4>
+                        <p class="card-text">No prior experience is necessary for most of our volunteer opportunities. We provide training and guidance for each camp. However, some specialized roles may require specific skills or experience, which will be noted in the camp description.</p>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title">How long do the environmental camps last?</h4>
+                        <p class="card-text">The duration of our camps varies from one-day events to multi-week projects. Each camp listing includes the start and end dates so you can find opportunities that fit your schedule.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title">Are there any fees to participate?</h4>
+                        <p class="card-text">Most of our local day events are free to participate in. For longer residential camps, there may be a small fee to cover accommodation, meals, and materials. Financial assistance may be available for those who need it.</p>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title">Can I suggest a new environmental project?</h4>
+                        <p class="card-text">Yes! We welcome ideas for new environmental initiatives. Please contact us with your proposal, and our team will review it to determine feasibility and alignment with our mission.</p>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title">How can organizations partner with Eco Volunteers?</h4>
+                        <p class="card-text">We're always open to partnerships with like-minded organizations, schools, businesses, and government agencies. Please contact us to discuss potential collaboration opportunities that advance our shared environmental goals.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- Newsletter Section -->
+<section class="section bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="mb-4">Stay Updated with Our Newsletter</h2>
+        <p class="lead mb-4">Subscribe to receive updates about upcoming camps, environmental news, and volunteer opportunities.</p>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form class="d-flex">
+                    <input type="email" class="form-control me-2" placeholder="Your email address">
+                    <button type="submit" class="btn btn-light">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

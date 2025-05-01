@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+
+{% block title %}Apply for {{ camp.name }} - Eco Volunteers{% endblock %}
+
+{% block content %}
+<!-- Apply Hero Section -->
+<section class="hero" style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('{% if camp.image %}{{ camp.image.url }}{% else %}https://source.unsplash.com/1600x900/?nature,volunteer{% endif %}');">
+    <div class="container">
+        <h1>Apply for {{ camp.name }}</h1>
+        <p>Complete this application to join our environmental volunteer camp</p>
+    </div>
+</section>
+
+<!-- Application Form Section -->
+<section class="section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Camp Application Form</h2>
+                        
+                        <!-- Camp Information Summary -->
+                        <div class="camp-summary mb-4 p-3 bg-light rounded">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="flex-shrink-0">
+                                    {% if camp.image %}
+                                        <img src="{{ camp.image.url }}" alt="{{ camp.name }}" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;">
+                                    {% else %}
+                                        <img src="https://source.unsplash.com/100x100/?nature" alt="Camp image" class="img-thumbnail">
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h4 class="mb-1">{{ camp.name }}</h4>
+                                    <p class="text-muted mb-0"><i class="fas fa-map-marker-alt me-1"></i>{{ camp.location }}</p>
+                                    <p class="text-muted mb-0"><i class="fas fa-calendar me-1"></i>{{ camp.start_date|date:"M d, Y" }} - {{ camp.end_date|date:"M d, Y" }}</p>
+                                </div>
+                            </div>
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle me-2"></i> You're applying to join this camp. Please provide your information below.
+                            </div>
+                        </div>
+                        
+                        <!-- Application Form -->
+                        <form method="post" id="camp-application-form" novalidate>
+                            {% csrf_token %}
+                            
+                            <div class="form-group mb-4">
+                                <label for="{{ form.motivation.id_for_label }}" class="form-label">
+                                    Why do you want to join this camp? <span class="text-danger">*</span>
+                                </label>
+                                {{ form.motivation }}
+                                {% if form.motivation.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.motivation.errors }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Share your motivation and what you hope to gain from this experience.</div>
+                            </div>
+                            
+                            <div class="form-group mb-4">
+                                <label for="{{ form.dietary_restrictions.id_for_label }}" class="form-label">
+                                    Do you have any dietary restrictions or allergies?
+                                </label>
+                                {{ form.dietary_restrictions }}
+                                {% if form.dietary_restrictions.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.dietary_restrictions.errors }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">This helps us plan meals and accommodations for the camp.</div>
+                            </div>
+                            
+                            <div class="form-group mb-4">
+                                <label for="{{ form.medical_conditions.id_for_label }}" class="form-label">
+                                    Do you have any medical conditions we should be aware of?
+                                </label>
+                                {{ form.medical_conditions }}
+                                {% if form.medical_conditions.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.medical_conditions.errors }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">This information is kept confidential and helps us ensure your safety.</div>
+                            </div>
+                            
+                            <!-- Terms and Conditions Checkbox -->
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms and Conditions</a> and understand the responsibilities of participating in this camp.
+                                </label>
+                                <div class="invalid-feedback">
+                                    You must agree to the terms and conditions to continue.
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">Submit Application</button>
+                                <a href="{% url 'camp_detail' camp.id %}" class="btn btn-outline">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title">What to Expect</h4>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i> Hands-on environmental conservation work</li>
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i> Educational workshops and training</li>
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i> Team building activities</li>
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i> Networking with like-minded volunteers</li>
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i> Certificate of participation</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Application Process</h4>
+                        <ol class="ps-3">
+                            <li class="mb-2">Submit your application</li>
+                            <li class="mb-2">Our team reviews your application</li>
+                            <li class="mb-2">You receive an email with the decision</li>
+                            <li class="mb-2">If approved, you'll receive camp details and preparation information</li>
+                            <li>Join us for the camp!</li>
+                        </ol>
+                        <p class="mt-3 mb-0"><i class="fas fa-info-circle text-info me-2"></i> Applications are typically reviewed within 1 week.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Terms and Conditions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>Volunteer Agreement</h5>
+                <p>By applying to participate in an Eco Volunteers camp, you agree to the following terms:</p>
+                
+                <h6>1. Participation</h6>
+                <p>You commit to actively participate in all scheduled activities to the best of your ability. If you are unable to participate in certain activities due to physical limitations or other concerns, please indicate this in your application.</p>
+                
+                <h6>2. Code of Conduct</h6>
+                <p>You agree to:</p>
+                <ul>
+                    <li>Respect the environment and wildlife</li>
+                    <li>Follow safety guidelines and instructions from camp leaders</li>
+                    <li>Be respectful towards other volunteers, staff, and local communities</li>
+                    <li>Refrain from any form of discrimination or harassment</li>
+                    <li>Not consume alcohol or drugs during camp activities</li>
+                </ul>
+                
+                <h6>3. Health and Safety</h6>
+                <p>You acknowledge that participating in environmental conservation activities may involve certain risks. You agree to provide accurate health information and notify camp leaders of any health concerns that may arise during the camp.</p>
+                
+                <h6>4. Media Release</h6>
+                <p>You grant Eco Volunteers permission to use photographs, videos, or other media featuring you during the camp for promotional and educational purposes.</p>
+                
+                <h6>5. Cancellation Policy</h6>
+                <p>If you need to cancel your participation, please notify us as soon as possible so we can offer your spot to another volunteer.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

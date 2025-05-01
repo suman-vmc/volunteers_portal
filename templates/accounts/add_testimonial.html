@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block title %}Share Your Experience - Eco Volunteers{% endblock %}
+
+{% block content %}
+<!-- Testimonial Hero Section -->
+<section class="hero" style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://source.unsplash.com/1600x900/?nature,testimonial');">
+    <div class="container">
+        <h1>Share Your Experience</h1>
+        <p>Let others know about your volunteer experience with Eco Volunteers</p>
+    </div>
+</section>
+
+<!-- Testimonial Form Section -->
+<section class="section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h2 class="card-title text-center mb-4">Add Your Testimonial</h2>
+                        
+                        {% if not has_approved_applications %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i> You need to participate in at least one of our camps before you can submit a testimonial.
+                            </div>
+                            <div class="text-center mt-4">
+                                <a href="{% url 'camp_list' %}" class="btn btn-primary">Browse Camps</a>
+                                <a href="{% url 'profile' %}" class="btn btn-outline ms-2">Back to Profile</a>
+                            </div>
+                        {% else %}
+                            <p class="lead text-center mb-4">
+                                Your testimonial helps inspire others to join our environmental mission. 
+                                Share your thoughts about your volunteer experience!
+                            </p>
+                            
+                            <form method="post" novalidate>
+                                {% csrf_token %}
+                                
+                                {% if form.non_field_errors %}
+                                    <div class="alert alert-danger">
+                                        {{ form.non_field_errors }}
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="form-group mb-4">
+                                    <label for="{{ form.camp.id_for_label }}" class="form-label">
+                                        Which camp are you reviewing? <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.camp }}
+                                    {% if form.camp.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.camp.errors }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text">Select the camp you participated in.</div>
+                                </div>
+                                
+                                <div class="form-group mb-4">
+                                    <label for="{{ form.content.id_for_label }}" class="form-label">
+                                        Your Experience <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.content }}
+                                    {% if form.content.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.content.errors }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text">Share what you enjoyed, what you learned, or how the experience impacted you.</div>
+                                </div>
+                                
+                                <div class="form-group mb-4">
+                                    <label for="{{ form.rating.id_for_label }}" class="form-label">
+                                        How would you rate your experience? <span class="text-danger">*</span>
+                                    </label>
+                                    
+                                    <div class="star-rating mb-2">
+                                        <i class="far fa-star star-rating-item" data-rating="1"></i>
+                                        <i class="far fa-star star-rating-item" data-rating="2"></i>
+                                        <i class="far fa-star star-rating-item" data-rating="3"></i>
+                                        <i class="far fa-star star-rating-item" data-rating="4"></i>
+                                        <i class="far fa-star star-rating-item" data-rating="5"></i>
+                                    </div>
+                                    
+                                    {{ form.rating }}
+                                    {% if form.rating.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.rating.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="alert alert-info mb-4">
+                                    <i class="fas fa-info-circle me-2"></i> Your testimonial will be reviewed by our team before being published on the website.
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg">Submit Testimonial</button>
+                                    <a href="{% url 'profile' %}" class="btn btn-outline">Cancel</a>
+                                </div>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block extra_js %}
+<script>
+    // Star rating functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const stars = document.querySelectorAll('.star-rating-item');
+        const ratingInput = document.getElementById('{{ form.rating.id_for_label }}');
+        
+        // Initialize stars based on current value (if editing)
+        if (ratingInput && ratingInput.value) {
+            updateStars(parseInt(ratingInput.value));
+        }
+        
+        // Add event listeners to stars
+        stars.forEach(star => {
+            star.addEventListener('mouseover', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                hoverStars(rating);
+            });
+            
+            star.addEventListener('mouseout', function() {
+                const currentRating = ratingInput.value ? parseInt(ratingInput.value) : 0;
+                updateStars(currentRating);
+            });
+            
+            star.addEventListener('click', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                ratingInput.value = rating;
+                updateStars(rating);
+            });
+        });
+        
+        function hoverStars(rating) {
+            stars.forEach(star => {
+                const starRating = parseInt(star.getAttribute('data-rating'));
+                if (starRating <= rating) {
+                    star.classList.remove('far');
+                    star.classList.add('fas');
+                } else {
+                    star.classList.remove('fas');
+                    star.classList.add('far');
+                }
+            });
+        }
+        
+        function updateStars(rating) {
+            stars.forEach(star => {
+                const starRating = parseInt(star.getAttribute('data-rating'));
+                if (starRating <= rating) {
+                    star.classList.remove('far');
+                    star.classList.add('fas');
+                } else {
+                    star.classList.remove('fas');
+                    star.classList.add('far');
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
+
+<style>
+    .star-rating {
+        font-size: 2rem;
+        color: #ffc107;
+        cursor: pointer;
+    }
+    
+    .star-rating-item {
+        margin-right: 5px;
+    }
+    
+    /* Hide the actual rating input */
+    #{{ form.rating.id_for_label }} {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+</style>
+{% endblock %}

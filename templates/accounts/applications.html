@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+
+{% block title %}My Applications - Eco Volunteers{% endblock %}
+
+{% block content %}
+<!-- Applications Hero Section -->
+<section class="hero" style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://source.unsplash.com/1600x900/?nature,application');">
+    <div class="container">
+        <h1>My Camp Applications</h1>
+        <p>Track the status of your volunteer camp applications</p>
+    </div>
+</section>
+
+<!-- Applications List Section -->
+<section class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 mb-4">
+                <!-- Profile Summary Card -->
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <div class="avatar-circle mb-3 mx-auto">
+                            <span class="avatar-initials">{{ user.first_name|first }}{{ user.last_name|first }}</span>
+                        </div>
+                        <h4 class="mb-1">{{ user.get_full_name }}</h4>
+                        <p class="text-muted">@{{ user.username }}</p>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Quick Links</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item px-0">
+                                <a href="{% url 'profile' %}" class="text-decoration-none">
+                                    <i class="fas fa-user me-2"></i> My Profile
+                                </a>
+                            </li>
+                            <li class="list-group-item px-0">
+                                <a href="{% url 'my_applications' %}" class="text-decoration-none text-primary">
+                                    <i class="fas fa-clipboard-list me-2"></i> My Applications
+                                </a>
+                            </li>
+                            <li class="list-group-item px-0">
+                                <a href="{% url 'add_testimonial' %}" class="text-decoration-none">
+                                    <i class="fas fa-comment me-2"></i> Add Testimonial
+                                </a>
+                            </li>
+                            <li class="list-group-item px-0">
+                                <a href="{% url 'camp_list' %}" class="text-decoration-none">
+                                    <i class="fas fa-search me-2"></i> Find Camps
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-9">
+                <!-- Applications Status Summary -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">Applications Summary</h3>
+                        
+                        <div class="row">
+                            <div class="col-md-3 col-6 mb-3 mb-md-0 text-center">
+                                <div class="p-3 rounded bg-light">
+                                    <h2 class="text-primary mb-0">{{ applications.count }}</h2>
+                                    <p class="mb-0">Total</p>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3 col-6 mb-3 mb-md-0 text-center">
+                                <div class="p-3 rounded bg-light">
+                                    <h2 class="text-primary mb-0">{{ total_count }}</h2>
+                                    <p class="mb-0">Pending</p>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3 col-6 text-center">
+                                <div class="p-3 rounded bg-light">
+                                    <h2 class="text-success mb-0">{{ approved_count }}</h2>
+                                    <p class="mb-0">Approved</p>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3 col-6 text-center">
+                                <div class="p-3 rounded bg-light">
+                                    <h2 class="text-warning mb-0">{{ pending_count }}</h2>
+                                    <p class="mb-0">Other</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Applications List -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h3 class="card-title mb-0">My Applications</h3>
+                            <a href="{% url 'camp_list' %}" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i> Apply to New Camp
+                            </a>
+                        </div>
+                        
+                        {% if applications %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Camp</th>
+                                            <th>Dates</th>
+                                            <th>Status</th>
+                                            <th>Applied On</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for application in applications %}
+                                            <tr>
+                                                <td>
+                                                    <a href="{% url 'camp_detail' application.camp.id %}" class="text-decoration-none fw-bold">
+                                                        {{ application.camp.name }}
+                                                    </a>
+                                                    <div class="text-muted small">
+                                                        <i class="fas fa-map-marker-alt me-1"></i> {{ application.camp.location }}
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    {{ application.camp.start_date|date:"M d, Y" }} - 
+                                                    {{ application.camp.end_date|date:"M d, Y" }}
+                                                </td>
+                                                <td>
+                                                    {% if application.status == 'PENDING' %}
+                                                        <span class="badge bg-warning">Pending</span>
+                                                    {% elif application.status == 'APPROVED' %}
+                                                        <span class="badge bg-success">Approved</span>
+                                                    {% elif application.status == 'REJECTED' %}
+                                                        <span class="badge bg-danger">Rejected</span>
+                                                    {% elif application.status == 'WAITLISTED' %}
+                                                        <span class="badge bg-info">Waitlisted</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ application.created_at|date:"M d, Y" }}</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-outline" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#applicationModal{{ application.id }}">
+                                                        View Details
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            
+                                            <!-- Application Details Modal -->
+                                            <div class="modal fade" id="applicationModal{{ application.id }}" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog modal-lg">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Application Details: {{ application.camp.name }}</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="mb-4">
+                                                                <div class="d-flex align-items-center mb-3">
+                                                                    <div class="flex-shrink-0">
+                                                                        {% if application.camp.image %}
+                                                                            <img src="{{ application.camp.image.url }}" class="img-thumbnail" alt="{{ application.camp.name }}" style="width: 100px; height: 100px; object-fit: cover;">
+                                                                        {% else %}
+                                                                            <img src="https://source.unsplash.com/100x100/?nature" class="img-thumbnail" alt="Camp image">
+                                                                        {% endif %}
+                                                                    </div>
+                                                                    <div class="flex-grow-1 ms-3">
+                                                                        <h4 class="mb-1">{{ application.camp.name }}</h4>
+                                                                        <p class="text-muted mb-0">
+                                                                            <i class="fas fa-map-marker-alt me-1"></i> {{ application.camp.location }}
+                                                                        </p>
+                                                                        <p class="text-muted mb-0">
+                                                                            <i class="fas fa-calendar me-1"></i> {{ application.camp.start_date|date:"M d, Y" }} - {{ application.camp.end_date|date:"M d, Y" }}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <div class="alert 
+                                                                    {% if application.status == 'PENDING' %}alert-warning
+                                                                    {% elif application.status == 'APPROVED' %}alert-success
+                                                                    {% elif application.status == 'REJECTED' %}alert-danger
+                                                                    {% elif application.status == 'WAITLISTED' %}alert-info
+                                                                    {% endif %}">
+                                                                    <div class="d-flex align-items-center">
+                                                                        {% if application.status == 'PENDING' %}
+                                                                            <i class="fas fa-clock me-2"></i>
+                                                                            <div>
+                                                                                <strong>Application Pending</strong>
+                                                                                <div>Your application is currently under review. We'll notify you once a decision has been made.</div>
+                                                                            </div>
+                                                                        {% elif application.status == 'APPROVED' %}
+                                                                            <i class="fas fa-check-circle me-2"></i>
+                                                                            <div>
+                                                                                <strong>Application Approved!</strong>
+                                                                                <div>Congratulations! Your application has been approved. Please check your email for further instructions.</div>
+                                                                            </div>
+                                                                        {% elif application.status == 'REJECTED' %}
+                                                                            <i class="fas fa-times-circle me-2"></i>
+                                                                            <div>
+                                                                                <strong>Application Not Approved</strong>
+                                                                                <div>We're sorry, but your application was not approved at this time. Please consider applying for other camps.</div>
+                                                                            </div>
+                                                                        {% elif application.status == 'WAITLISTED' %}
+                                                                            <i class="fas fa-hourglass-half me-2"></i>
+                                                                            <div>
+                                                                                <strong>You're on the Waitlist</strong>
+                                                                                <div>The camp is currently full, but you're on our waitlist. We'll contact you if a spot becomes available.</div>
+                                                                            </div>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="row mb-4">
+                                                                <div class="col-md-6 mb-3 mb-md-0">
+                                                                    <h5>Application Date</h5>
+                                                                    <p>{{ application.created_at|date:"F d, Y" }}</p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <h5>Last Updated</h5>
+                                                                    <p>{{ application.updated_at|date:"F d, Y" }}</p>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="mb-4">
+                                                                <h5>Your Motivation</h5>
+                                                                <p>{{ application.motivation }}</p>
+                                                            </div>
+                                                            
+                                                            {% if application.dietary_restrictions %}
+                                                                <div class="mb-4">
+                                                                    <h5>Dietary Restrictions</h5>
+                                                                    <p>{{ application.dietary_restrictions }}</p>
+                                                                </div>
+                                                            {% endif %}
+                                                            
+                                                            {% if application.medical_conditions %}
+                                                                <div class="mb-4">
+                                                                    <h5>Medical Conditions</h5>
+                                                                    <p>{{ application.medical_conditions }}</p>
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            {% if application.status == 'APPROVED' %}
+                                                                <a href="{% url 'add_testimonial' %}" class="btn btn-primary">Add Testimonial</a>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
+                                <h4 class="text-muted">No Applications Yet</h4>
+                                <p>You haven't applied to any camps yet. Explore our available camps and apply today!</p>
+                                <a href="{% url 'camp_list' %}" class="btn btn-primary mt-2">
+                                    Browse Available Camps
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="section bg-light">
+    <div class="container text-center">
+        <h2 class="mb-4">Ready for Your Next Adventure?</h2>
+        <p class="lead mb-4">Explore more environmental camps and continue making a positive impact.</p>
+        <a href="{% url 'camp_list' %}" class="btn btn-primary btn-lg">Find More Camps</a>
+    </div>
+</section>
+
+<style>
+    .avatar-circle {
+        width: 100px;
+        height: 100px;
+        background-color: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .avatar-initials {
+        color: white;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

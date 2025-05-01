@@ -1,0 +1,397 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Volunteers - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-2 p-0">
+                <div class="admin-sidebar">
+                    <div class="p-3 text-white text-center mb-4">
+                        <h4 class="mb-1">Admin Dashboard</h4>
+                        <p class="mb-0 small">Welcome, {{ user.username }}</p>
+                    </div>
+                    
+                    <a href="{% url 'admin_dashboard' %}" class="admin-sidebar-link">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="{% url 'admin_manage_camps' %}" class="admin-sidebar-link">
+                        <i class="fas fa-campground me-2"></i> Manage Camps
+                    </a>
+                    <a href="{% url 'admin_manage_volunteers' %}" class="admin-sidebar-link active">
+                        <i class="fas fa-users me-2"></i> Manage Volunteers
+                    </a>
+                    <a href="{% url 'admin_manage_applications' %}" class="admin-sidebar-link">
+                        <i class="fas fa-clipboard-list me-2"></i> Applications
+                    </a>
+                    <a href="{% url 'admin_manage_testimonials' %}" class="admin-sidebar-link">
+                        <i class="fas fa-comment me-2"></i> Testimonials
+                    </a>
+                    <hr class="bg-light opacity-25 mx-3">
+                    <a href="{% url 'admin:index' %}" class="admin-sidebar-link" target="_blank">
+                        <i class="fas fa-tools me-2"></i> Django Admin
+                    </a>
+                    <a href="{% url 'home' %}" class="admin-sidebar-link">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Site
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-10">
+                <div class="admin-content">
+                    <div class="mb-4">
+                        <h1 class="mb-0">Manage Volunteers</h1>
+                        <p class="text-muted">View and manage volunteer profiles and information</p>
+                    </div>
+                    
+                    <!-- Search and Filter -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                        <input type="text" class="form-control" id="volunteer-search" placeholder="Search volunteers by name, email, phone...">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <select class="form-select" id="gender-filter">
+                                        <option value="all">All Genders</option>
+                                        <option value="M">Male</option>
+                                        <option value="F">Female</option>
+                                        <option value="O">Other</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-outline w-100" id="reset-filters">
+                                        Reset Filters
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Volunteers Table -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="volunteers-table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Volunteer</th>
+                                            <th>Contact Information</th>
+                                            <th>Demographics</th>
+                                            <th>Applications</th>
+                                            <th>Skills & Experience</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for profile in volunteers %}
+                                            <tr class="volunteer-row" data-gender="{{ profile.gender }}">
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="avatar-circle me-2" style="width: 40px; height: 40px; font-size: 1rem;">
+                                                            <span class="avatar-initials">{{ profile.user.first_name|first }}{{ profile.user.last_name|first }}</span>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="mb-0">{{ profile.user.get_full_name }}</h6>
+                                                            <small class="text-muted">@{{ profile.user.username }}</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div><i class="fas fa-envelope me-1 text-muted"></i> {{ profile.user.email }}</div>
+                                                    <div><i class="fas fa-phone me-1 text-muted"></i> {{ profile.phone }}</div>
+                                                </td>
+                                                <td>
+                                                    {% if profile.age %}
+                                                        <div><i class="fas fa-birthday-cake me-1 text-muted"></i> {{ profile.age }} years</div>
+                                                    {% endif %}
+                                                    <div>
+                                                        <i class="fas fa-venus-mars me-1 text-muted"></i>
+                                                        {% if profile.gender == 'M' %}
+                                                            Male
+                                                        {% elif profile.gender == 'F' %}
+                                                            Female
+                                                        {% elif profile.gender == 'O' %}
+                                                            Other
+                                                        {% else %}
+                                                            Not specified
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div>Total: {{ profile.user.applications.count }}</div>
+                                                    <div>
+                                                        <span class="badge bg-success">
+                                                            {{ profile.user.applications.filter(status='APPROVED').count }} Approved
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline" type="button" data-bs-toggle="collapse" data-bs-target="#skills{{ profile.id }}">
+                                                        View Skills
+                                                    </button>
+                                                    <div class="collapse mt-2" id="skills{{ profile.id }}">
+                                                        <div class="card card-body p-2 bg-light">
+                                                            {% if profile.skills %}
+                                                                <small>{{ profile.skills|truncatechars:100 }}</small>
+                                                            {% else %}
+                                                                <small class="text-muted">No skills listed</small>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-outline dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                            Actions
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li>
+                                                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#volunteerModal{{ profile.id }}">
+                                                                    <i class="fas fa-eye me-2"></i> View Details
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="dropdown-item" href="{% url 'admin_manage_applications' %}?volunteer={{ profile.user.id }}">
+                                                                    <i class="fas fa-clipboard-list me-2"></i> View Applications
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="dropdown-item text-danger" href="#">
+                                                                    <i class="fas fa-user-times me-2"></i> Deactivate Account
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    
+                                                    <!-- Volunteer Details Modal -->
+                                                    <div class="modal fade" id="volunteerModal{{ profile.id }}" tabindex="-1" aria-hidden="true">
+                                                        <div class="modal-dialog modal-lg">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title">Volunteer Profile: {{ profile.user.get_full_name }}</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <div class="row">
+                                                                        <div class="col-md-4 text-center mb-4 mb-md-0">
+                                                                            <div class="avatar-circle mx-auto mb-3" style="width: 120px; height: 120px; font-size: 3rem;">
+                                                                                <span class="avatar-initials">{{ profile.user.first_name|first }}{{ profile.user.last_name|first }}</span>
+                                                                            </div>
+                                                                            
+                                                                            <h4 class="mb-1">{{ profile.user.get_full_name }}</h4>
+                                                                            <p class="text-muted mb-3">@{{ profile.user.username }}</p>
+                                                                            
+                                                                            <div class="d-flex justify-content-center">
+                                                                                <span class="badge bg-success me-2">
+                                                                                    {{ profile.user.applications.filter(status='APPROVED').count }} Approved
+                                                                                </span>
+                                                                                <span class="badge bg-primary">
+                                                                                    Joined {{ profile.created_at|date:"M Y" }}
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                        
+                                                                        <div class="col-md-8">
+                                                                            <h5 class="border-bottom pb-2 mb-3">Personal Information</h5>
+                                                                            
+                                                                            <div class="row mb-3">
+                                                                                <div class="col-sm-4 text-muted">Full Name:</div>
+                                                                                <div class="col-sm-8">{{ profile.user.get_full_name }}</div>
+                                                                            </div>
+                                                                            
+                                                                            <div class="row mb-3">
+                                                                                <div class="col-sm-4 text-muted">Email:</div>
+                                                                                <div class="col-sm-8">{{ profile.user.email }}</div>
+                                                                            </div>
+                                                                            
+                                                                            <div class="row mb-3">
+                                                                                <div class="col-sm-4 text-muted">Phone:</div>
+                                                                                <div class="col-sm-8">{{ profile.phone }}</div>
+                                                                            </div>
+                                                                            
+                                                                            <div class="row mb-3">
+                                                                                <div class="col-sm-4 text-muted">Address:</div>
+                                                                                <div class="col-sm-8">{{ profile.address }}</div>
+                                                                            </div>
+                                                                            
+                                                                            <div class="row mb-3">
+                                                                                <div class="col-sm-4 text-muted">Date of Birth:</div>
+                                                                                <div class="col-sm-8">
+                                                                                    {% if profile.date_of_birth %}
+                                                                                        {{ profile.date_of_birth|date:"F d, Y" }} ({{ profile.age }} years)
+                                                                                    {% else %}
+                                                                                        Not provided
+                                                                                    {% endif %}
+                                                                                </div>
+                                                                            </div>
+                                                                            
+                                                                            <div class="row mb-3">
+                                                                                <div class="col-sm-4 text-muted">Gender:</div>
+                                                                                <div class="col-sm-8">
+                                                                                    {% if profile.gender == 'M' %}
+                                                                                        Male
+                                                                                    {% elif profile.gender == 'F' %}
+                                                                                        Female
+                                                                                    {% elif profile.gender == 'O' %}
+                                                                                        Other
+                                                                                    {% else %}
+                                                                                        Not specified
+                                                                                    {% endif %}
+                                                                                </div>
+                                                                            </div>
+                                                                            
+                                                                            <h5 class="border-bottom pb-2 mb-3 mt-4">Emergency Contact</h5>
+                                                                            
+                                                                            <div class="row mb-3">
+                                                                                <div class="col-sm-4 text-muted">Name:</div>
+                                                                                <div class="col-sm-8">
+                                                                                    {{ profile.emergency_contact|default:"Not provided" }}
+                                                                                </div>
+                                                                            </div>
+                                                                            
+                                                                            <div class="row mb-3">
+                                                                                <div class="col-sm-4 text-muted">Phone:</div>
+                                                                                <div class="col-sm-8">
+                                                                                    {{ profile.emergency_phone|default:"Not provided" }}
+                                                                                </div>
+                                                                            </div>
+                                                                            
+                                                                            <h5 class="border-bottom pb-2 mb-3 mt-4">Skills & Experience</h5>
+                                                                            
+                                                                            <div class="row mb-3">
+                                                                                <div class="col-sm-4 text-muted">Skills:</div>
+                                                                                <div class="col-sm-8">
+                                                                                    {% if profile.skills %}
+                                                                                        {{ profile.skills }}
+                                                                                    {% else %}
+                                                                                        Not provided
+                                                                                    {% endif %}
+                                                                                </div>
+                                                                            </div>
+                                                                            
+                                                                            <div class="row mb-3">
+                                                                                <div class="col-sm-4 text-muted">Experience:</div>
+                                                                                <div class="col-sm-8">
+                                                                                    {% if profile.experience %}
+                                                                                        {{ profile.experience }}
+                                                                                    {% else %}
+                                                                                        Not provided
+                                                                                    {% endif %}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                    <a href="{% url 'admin_manage_applications' %}?volunteer={{ profile.user.id }}" class="btn btn-primary">
+                                                                        View Applications
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="6" class="text-center py-4">
+                                                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                                                    <h5>No Volunteers Found</h5>
+                                                    <p class="mb-0 text-muted">There are no registered volunteers in the system yet.</p>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Search functionality
+        const volunteerSearch = document.getElementById('volunteer-search');
+        volunteerSearch.addEventListener('input', filterVolunteers);
+        
+        // Gender filter
+        const genderFilter = document.getElementById('gender-filter');
+        genderFilter.addEventListener('change', filterVolunteers);
+        
+        // Reset filters
+        const resetFilters = document.getElementById('reset-filters');
+        resetFilters.addEventListener('click', function() {
+            volunteerSearch.value = '';
+            genderFilter.value = 'all';
+            filterVolunteers();
+        });
+        
+        function filterVolunteers() {
+            const searchTerm = volunteerSearch.value.toLowerCase();
+            const gender = genderFilter.value;
+            
+            const rows = document.querySelectorAll('#volunteers-table tbody tr.volunteer-row');
+            
+            rows.forEach(row => {
+                const volunteerName = row.querySelector('td:first-child h6').textContent.toLowerCase();
+                const volunteerUsername = row.querySelector('td:first-child small').textContent.toLowerCase();
+                const volunteerEmail = row.querySelector('td:nth-child(2) div:first-child').textContent.toLowerCase();
+                const volunteerPhone = row.querySelector('td:nth-child(2) div:last-child').textContent.toLowerCase();
+                
+                const rowGender = row.dataset.gender;
+                
+                const matchesSearch = volunteerName.includes(searchTerm) || 
+                                      volunteerUsername.includes(searchTerm) || 
+                                      volunteerEmail.includes(searchTerm) || 
+                                      volunteerPhone.includes(searchTerm);
+                                      
+                const matchesGender = gender === 'all' || rowGender === gender;
+                
+                if (matchesSearch && matchesGender) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Show or hide the "No volunteers found" message
+            const noResultsRow = document.querySelector('#volunteers-table tbody tr:not(.volunteer-row)');
+            if (noResultsRow) {
+                const visibleRows = document.querySelectorAll('#volunteers-table tbody tr.volunteer-row[style=""]').length;
+                noResultsRow.style.display = visibleRows === 0 ? '' : 'none';
+            }
+        }
+    });
+</script>
+{% endblock %}
+
+<style>
+    .avatar-circle {
+        background-color: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .avatar-initials {
+        color: white;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

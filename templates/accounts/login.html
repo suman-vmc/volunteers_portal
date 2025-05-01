@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Eco Volunteers{% endblock %}
+
+{% block content %}
+<!-- Login Hero Section -->
+<section class="hero" style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://source.unsplash.com/1600x900/?nature,forest');">
+    <div class="container">
+        <h1>Login to Your Account</h1>
+        <p>Access your volunteer profile and manage your camp applications</p>
+    </div>
+</section>
+
+<!-- Login Form Section -->
+<section class="section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h2 class="card-title text-center mb-4">Welcome Back</h2>
+                        
+                        <form method="post" novalidate>
+                            {% csrf_token %}
+                            
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                    {{ form.non_field_errors }}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="form-group mb-3">
+                                <label for="{{ form.username.id_for_label }}" class="form-label">
+                                    Username
+                                </label>
+                                {{ form.username }}
+                                {% if form.username.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.username.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group mb-4">
+                                <label for="{{ form.password.id_for_label }}" class="form-label">
+                                    Password
+                                </label>
+                                {{ form.password }}
+                                {% if form.password.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.password.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Include a remember me checkbox -->
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="rememberMe" name="remember">
+                                <label class="form-check-label" for="rememberMe">
+                                    Remember me
+                                </label>
+                            </div>
+                            
+                            <!-- Add a hidden next field if it exists in the request -->
+                            {% if request.GET.next %}
+                                <input type="hidden" name="next" value="{{ request.GET.next }}">
+                            {% endif %}
+                            
+                            <div class="d-grid gap-2 mb-3">
+                                <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                            </div>
+                            
+                            <div class="text-center">
+                                <p class="mb-0">Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Admin Login Option -->
+                <div class="text-center mt-4">
+                    <p>Are you an administrator? <a href="{% url 'login' %}?next={% url 'admin_dashboard' %}">Admin Login</a></p>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4 d-none d-md-block">
+                <div class="card border-0 rounded-3 h-100 bg-light">
+                    <div class="card-body p-4">
+                        <h4 class="card-title mb-4">Why Join Eco Volunteers?</h4>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3 text-primary">
+                                <i class="fas fa-leaf fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1">Make an Impact</h5>
+                                <p class="text-muted mb-0">Contribute directly to environmental conservation</p>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3 text-primary">
+                                <i class="fas fa-users fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1">Join a Community</h5>
+                                <p class="text-muted mb-0">Connect with like-minded eco-conscious volunteers</p>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3 text-primary">
+                                <i class="fas fa-book fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1">Learn & Grow</h5>
+                                <p class="text-muted mb-0">Gain valuable skills and environmental knowledge</p>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex align-items-center">
+                            <div class="me-3 text-primary">
+                                <i class="fas fa-certificate fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1">Get Recognized</h5>
+                                <p class="text-muted mb-0">Receive certificates for your environmental service</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

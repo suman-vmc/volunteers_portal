@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Applications - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-2 p-0">
+                <div class="admin-sidebar">
+                    <div class="p-3 text-white text-center mb-4">
+                        <h4 class="mb-1">Admin Dashboard</h4>
+                        <p class="mb-0 small">Welcome, {{ user.username }}</p>
+                    </div>
+                    
+                    <a href="{% url 'admin_dashboard' %}" class="admin-sidebar-link">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="{% url 'admin_manage_camps' %}" class="admin-sidebar-link">
+                        <i class="fas fa-campground me-2"></i> Manage Camps
+                    </a>
+                    <a href="{% url 'admin_manage_volunteers' %}" class="admin-sidebar-link">
+                        <i class="fas fa-users me-2"></i> Manage Volunteers
+                    </a>
+                    <a href="{% url 'admin_manage_applications' %}" class="admin-sidebar-link active">
+                        <i class="fas fa-clipboard-list me-2"></i> Applications
+                    </a>
+                    <a href="{% url 'admin_manage_testimonials' %}" class="admin-sidebar-link">
+                        <i class="fas fa-comment me-2"></i> Testimonials
+                    </a>
+                    <hr class="bg-light opacity-25 mx-3">
+                    <a href="{% url 'admin:index' %}" class="admin-sidebar-link" target="_blank">
+                        <i class="fas fa-tools me-2"></i> Django Admin
+                    </a>
+                    <a href="{% url 'home' %}" class="admin-sidebar-link">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Site
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-10">
+                <div class="admin-content">
+                    <div class="mb-4">
+                        <h1 class="mb-0">Manage Applications</h1>
+                        <p class="text-muted">Review and manage volunteer applications for camps</p>
+                    </div>
+                    
+                    <!-- Statistics Cards -->
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body d-flex align-items-center p-3">
+                                    <div class="rounded-circle bg-warning bg-opacity-25 p-3 me-3">
+                                        <i class="fas fa-clock text-warning"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="fw-bold mb-0">{{ applications.filter(status='PENDING').count }}</h5>
+                                        <span class="text-muted small">Pending Applications</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body d-flex align-items-center p-3">
+                                    <div class="rounded-circle bg-success bg-opacity-25 p-3 me-3">
+                                        <i class="fas fa-check-circle text-success"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="fw-bold mb-0">{{ applications.filter(status='APPROVED').count }}</h5>
+                                        <span class="text-muted small">Approved Applications</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body d-flex align-items-center p-3">
+                                    <div class="rounded-circle bg-danger bg-opacity-25 p-3 me-3">
+                                        <i class="fas fa-times-circle text-danger"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="fw-bold mb-0">{{ applications.filter(status='REJECTED').count }}</h5>
+                                        <span class="text-muted small">Rejected Applications</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body d-flex align-items-center p-3">
+                                    <div class="rounded-circle bg-info bg-opacity-25 p-3 me-3">
+                                        <i class="fas fa-hourglass-half text-info"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="fw-bold mb-0">{{ applications.filter(status='WAITLISTED').count }}</h5>
+                                        <span class="text-muted small">Waitlisted Applications</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Search and Filter -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form method="get" class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                        <input type="text" class="form-control" id="search" name="search" placeholder="Search applications..." value="{{ request.GET.search|default:'' }}">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <select class="form-select" id="status" name="status">
+                                        <option value="" {% if not current_status %}selected{% endif %}>All Statuses</option>
+                                        <option value="PENDING" {% if current_status == 'PENDING' %}selected{% endif %}>Pending</option>
+                                        <option value="APPROVED" {% if current_status == 'APPROVED' %}selected{% endif %}>Approved</option>
+                                        <option value="REJECTED" {% if current_status == 'REJECTED' %}selected{% endif %}>Rejected</option>
+                                        <option value="WAITLISTED" {% if current_status == 'WAITLISTED' %}selected{% endif %}>Waitlisted</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <select class="form-select" id="camp" name="camp">
+                                        <option value="" {% if not current_camp %}selected{% endif %}>All Camps</option>
+                                        {% for camp in camps %}
+                                            <option value="{{ camp.id }}" {% if current_camp == camp.id|stringformat:"i" %}selected{% endif %}>{{ camp.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-2">
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-primary">Filter</button>
+                                        <a href="{% url 'admin_manage_applications' %}" class="btn btn-outline">Reset</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Applications Table -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="applications-table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Volunteer</th>
+                                            <th>Camp</th>
+                                            <th>Applied On</th>
+                                            <th>Status</th>
+                                            <th>Motivation</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for application in applications %}
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="avatar-circle me-2" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                                            <span class="avatar-initials">{{ application.volunteer.first_name|first }}{{ application.volunteer.last_name|first }}</span>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="mb-0">{{ application.volunteer.get_full_name }}</h6>
+                                                            <small class="text-muted">{{ application.volunteer.email }}</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <a href="{% url 'camp_detail' application.camp.id %}" class="text-decoration-none">
+                                                        <div class="fw-bold">{{ application.camp.name }}</div>
+                                                        <div class="text-muted small">{{ application.camp.start_date|date:"M d, Y" }} - {{ application.camp.end_date|date:"M d, Y" }}</div>
+                                                    </a>
+                                                </td>
+                                                <td>{{ application.created_at|date:"M d, Y" }}</td>
+                                                <td>
+                                                    {% if application.status == 'PENDING' %}
+                                                        <span class="badge bg-warning">Pending</span>
+                                                    {% elif application.status == 'APPROVED' %}
+                                                        <span class="badge bg-success">Approved</span>
+                                                    {% elif application.status == 'REJECTED' %}
+                                                        <span class="badge bg-danger">Rejected</span>
+                                                    {% elif application.status == 'WAITLISTED' %}
+                                                        <span class="badge bg-info">Waitlisted</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <div class="text-truncate" style="max-width: 200px;">
+                                                        {{ application.motivation|truncatechars:50 }}
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <a href="{% url 'admin_review_application' application.id %}" class="btn btn-sm btn-primary">
+                                                        <i class="fas fa-eye me-1"></i> Review
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="6" class="text-center py-4">
+                                                    <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                                                    <h5>No Applications Found</h5>
+                                                    <p class="mb-0 text-muted">No applications match your current filters.</p>
+                                                    <a href="{% url 'admin_manage_applications' %}" class="btn btn-outline mt-3">Clear Filters</a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-circle {
+        background-color: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .avatar-initials {
+        color: white;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

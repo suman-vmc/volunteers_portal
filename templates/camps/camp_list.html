@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+
+{% block title %}Environmental Camps - Eco Volunteers{% endblock %}
+
+{% block content %}
+<!-- Camps Hero Section -->
+<section class="hero" style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://source.unsplash.com/1600x900/?camping,environment');">
+    <div class="container">
+        <h1>Environmental Volunteer Camps</h1>
+        <p>Join one of our environmental camps and make a tangible impact on conservation efforts around the world.</p>
+    </div>
+</section>
+
+<!-- Camps Listing Section -->
+<section class="section">
+    <div class="container">
+        <!-- Search and Filter -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" id="camp-search" placeholder="Search camps...">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-filter"></i></span>
+                    <select class="form-select" id="camp-filter">
+                        <option value="all">All Camps</option>
+                        <option value="upcoming">Upcoming Camps</option>
+                        <option value="past">Past Camps</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Camps Grid -->
+        <div class="row">
+            {% if camps %}
+                {% for camp in camps %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card camp-card h-100" data-status="{% if camp.start_date > today %}upcoming{% else %}past{% endif %}">
+                            {% if camp.image %}
+                                <img src="{{ camp.image.url }}" class="card-img-top" alt="{{ camp.name }}">
+                            {% else %}
+                                <img src="https://source.unsplash.com/800x500/?nature,environment" class="card-img-top" alt="Environmental camp">
+                            {% endif %}
+                            <div class="card-body">
+                                <h4 class="card-title">{{ camp.name }}</h4>
+                                <p class="camp-location"><i class="fas fa-map-marker-alt text-primary me-2"></i>{{ camp.location }}</p>
+                                <p class="card-text">{{ camp.description|truncatechars:150 }}</p>
+                                
+                                <div class="mb-3">
+                                    <span class="badge bg-primary">{{ camp.start_date|date:"M d, Y" }} to {{ camp.end_date|date:"M d, Y" }}</span>
+                                    
+                                    {% if camp.days_until_start > 0 %}
+                                        <span class="badge bg-info ms-2">Starts in {{ camp.days_until_start }} days</span>
+                                    {% endif %}
+                                    
+                                    <span class="badge bg-success mt-2">
+                                        {{ camp.get_registered_volunteers_count }} / {{ camp.max_volunteers }} Volunteers
+                                    </span>
+                                </div>
+                                
+                                <a href="{% url 'camp_detail' camp.id %}" class="btn btn-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> No camps are currently available. Please check back soon for upcoming volunteer opportunities!
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Camp Types Section -->
+<section class="section bg-light">
+    <div class="container">
+        <div class="section-title">
+            <h2>Types of Environmental Camps</h2>
+            <p>We offer a variety of camp types to address different environmental needs:</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-tree fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title">Reforestation Camps</h3>
+                        <p class="card-text">Participate in tree planting and forest restoration to combat deforestation and create wildlife habitats.</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Tree planting</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Seedling nursery management</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Forest monitoring</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-water fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title">Coastal & Marine Camps</h3>
+                        <p class="card-text">Help protect marine ecosystems through beach cleanups, coral restoration, and marine conservation efforts.</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Beach cleanups</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Coral reef monitoring</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Marine wildlife surveys</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-paw fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title">Wildlife Conservation</h3>
+                        <p class="card-text">Support wildlife conservation through habitat restoration, population monitoring, and protection activities.</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Wildlife surveys</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Habitat restoration</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Anti-poaching patrols</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-recycle fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title">Waste Management</h3>
+                        <p class="card-text">Work on waste reduction, recycling initiatives, and cleanup campaigns in urban and natural areas.</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Waste collection</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Recycling programs</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Community education</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-seedling fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title">Sustainable Agriculture</h3>
+                        <p class="card-text">Learn and practice sustainable farming methods to promote food security and environmental stewardship.</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Organic farming</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Permaculture design</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Community gardens</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-book fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title">Environmental Education</h3>
+                        <p class="card-text">Assist in educational programs that raise awareness about environmental issues and solutions.</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle text-success me-2"></i>School outreach</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Nature interpretation</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Workshop facilitation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Volunteer Testimonials -->
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <h2>What Our Volunteers Say</h2>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="testimonial">
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-content">"The reforestation camp was an incredible experience! I learned so much about local ecosystems while making a positive impact. The team leaders were knowledgeable and supportive."</p>
+                    <p class="testimonial-author">- Dev Patel</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="testimonial">
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-content">"Participating in the coastal cleanup camp was both eye-opening and rewarding. Seeing the immediate impact of our work on the beach environment was truly fulfilling."</p>
+                    <p class="testimonial-author">- Sameer</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="testimonial">
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <p class="testimonial-content">"The wildlife conservation camp exceeded my expectations. I gained practical skills in field research while contributing to important conservation efforts. Would definitely recommend!"</p>
+                    <p class="testimonial-author">- Aryan Sharma</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="section bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="mb-4">Ready to Make a Difference?</h2>
+        <p class="lead mb-4">Join a camp today and help us protect and restore our natural environment.</p>
+        {% if user.is_authenticated %}
+            <a href="#" class="btn btn-light btn-lg">Browse Camps</a>
+        {% else %}
+            <a href="{% url 'register' %}" class="btn btn-light btn-lg">Register Now</a>
+            <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg ms-2">Login</a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

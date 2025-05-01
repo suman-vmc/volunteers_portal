@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ camp.name }} - Eco Volunteers{% endblock %}
+
+{% block content %}
+<!-- Camp Detail Hero Section -->
+<section class="hero" style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('{% if camp.image %}{{ camp.image.url }}{% else %}https://source.unsplash.com/1600x900/?nature,environment{% endif %}');">
+    <div class="container">
+        <h1>{{ camp.name }}</h1>
+        <p><i class="fas fa-map-marker-alt me-2"></i>{{ camp.location }}</p>
+    </div>
+</section>
+
+<!-- Camp Details Section -->
+<section class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Main Camp Information -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">About This Camp</h2>
+                        <p class="lead">{{ camp.description }}</p>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6 mb-3">
+                                <h5><i class="far fa-calendar-alt text-primary me-2"></i>Camp Duration</h5>
+                                <p>{{ camp.start_date|date:"F d, Y" }} - {{ camp.end_date|date:"F d, Y" }}</p>
+                                <p>
+                                    {% if camp.days_until_start > 0 %}
+                                        <span class="badge bg-info">Starts in {{ camp.days_until_start }} days</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">In progress</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <h5><i class="fas fa-users text-primary me-2"></i>Volunteer Capacity</h5>
+                                <p>{{ camp.get_registered_volunteers_count }} / {{ camp.max_volunteers }} Volunteers</p>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" 
+                                         style="width: {{ camp.get_registered_volunteers_count|floatformat:0 }}%;" 
+                                         aria-valuenow="{{ camp.get_registered_volunteers_count }}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="{{ camp.max_volunteers }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- What to Expect Card -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h3 class="card-title mb-3">What to Expect</h3>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-tasks text-primary me-2"></i>Activities</h5>
+                                <ul>
+                                    <li>Environmental conservation work</li>
+                                    <li>Team building exercises</li>
+                                    <li>Educational workshops</li>
+                                    <li>Field research</li>
+                                    <li>Community outreach</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-suitcase text-primary me-2"></i>What to Bring</h5>
+                                <ul>
+                                    <li>Weather-appropriate clothing</li>
+                                    <li>Sturdy work shoes</li>
+                                    <li>Water bottle</li>
+                                    <li>Sun protection</li>
+                                    <li>Positive attitude!</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Testimonials Card (if any) -->
+                {% if has_approved_testimonials %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h3 class="card-title mb-3">Volunteer Testimonials</h3>
+                        
+                        {% for testimonial in approved_testimonials %}
+                        <div class="testimonial mb-3">
+                            <div class="testimonial-rating">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= testimonial.rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <p class="testimonial-content">"{{ testimonial.content }}"</p>
+                            <p class="testimonial-author">- {{ testimonial.volunteer.get_full_name }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="col-lg-4">
+                <!-- Application/Status Card -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h3 class="card-title">Join This Camp</h3>
+                        
+                        {% if camp.is_registration_open %}
+                            {% if user.is_authenticated %}
+                                {% if user_has_applied %}
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i> You have already applied to this camp. Check your application status in your profile.
+                                    </div>
+                                    <a href="{% url 'my_applications' %}" class="btn btn-primary btn-lg w-100">View My Application</a>
+                                {% else %}
+                                    <p>Ready to make a difference? Apply now to join this environmental camp!</p>
+                                    <a href="{% url 'apply_to_camp' camp.id %}" class="btn btn-primary btn-lg w-100">Apply Now</a>
+                                {% endif %}
+                            {% else %}
+                                <p>Please log in or register to apply for this camp.</p>
+                                <a href="{% url 'login' %}?next={% url 'apply_to_camp' camp.id %}" class="btn btn-primary btn-lg w-100 mb-2">Login to Apply</a>
+                                <a href="{% url 'register' %}" class="btn btn-outline w-100">Register</a>
+                            {% endif %}
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i> 
+                                {% if camp.get_registered_volunteers_count >= camp.max_volunteers %}
+                                    This camp is currently full. Please check other opportunities.
+                                {% else %}
+                                    Registration for this camp is currently closed.
+                                {% endif %}
+                            </div>
+                            <a href="{% url 'camp_list' %}" class="btn btn-outline btn-lg w-100">Explore Other Camps</a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Camp Details Side Card -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title">Camp Details</h4>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-map-marker-alt text-primary me-2"></i> Location</span>
+                                <span class="text-muted">{{ camp.location }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-calendar-alt text-primary me-2"></i> Start Date</span>
+                                <span class="text-muted">{{ camp.start_date|date:"M d, Y" }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-calendar-check text-primary me-2"></i> End Date</span>
+                                <span class="text-muted">{{ camp.end_date|date:"M d, Y" }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-clock text-primary me-2"></i> Duration</span>
+                                <span class="text-muted">{{ camp.start_date|timesince:camp.end_date }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-users text-primary me-2"></i> Spots Left</span>
+                                <span class="text-muted">{{ spots_left }}</span>
+
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Share Card -->
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Share This Camp</h4>
+                        <p>Help us spread the word about this volunteer opportunity!</p>
+                        <div class="d-flex justify-content-around">
+                            <a href="#" class="btn btn-outline"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="btn btn-outline"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="btn btn-outline"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#" class="btn btn-outline"><i class="fab fa-whatsapp"></i></a>
+                            <a href="#" class="btn btn-outline"><i class="fas fa-envelope"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Camps Section -->
+<section class="section bg-light">
+    <div class="container">
+        <div class="section-title">
+            <h2>Other Camps You Might Like</h2>
+        </div>
+        
+        <div class="row">
+            {% for related_camp in related_camps|slice:":3" %}
+                <div class="col-md-4 mb-4">
+                    <div class="card camp-card h-100">
+                        {% if related_camp.image %}
+                            <img src="{{ related_camp.image.url }}" class="card-img-top" alt="{{ related_camp.name }}">
+                        {% else %}
+                            <img src="https://source.unsplash.com/800x500/?nature,environment" class="card-img-top" alt="Environmental camp">
+                        {% endif %}
+                        <div class="card-body">
+                            <h4 class="card-title">{{ related_camp.name }}</h4>
+                            <p class="camp-location"><i class="fas fa-map-marker-alt text-primary me-2"></i>{{ related_camp.location }}</p>
+                            <p class="card-text">{{ related_camp.description|truncatechars:100 }}</p>
+                            <div class="mb-3">
+                                <span class="badge bg-primary">{{ related_camp.start_date|date:"M d, Y" }}</span>
+                                <span class="badge bg-success ms-2">{{ related_camp.get_registered_volunteers_count }} / {{ related_camp.max_volunteers }} Volunteers</span>
+                            </div>
+                            <a href="{% url 'camp_detail' related_camp.id %}" class="btn btn-primary">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center">
+                    <p>No related camps at the moment.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="section bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="mb-4">Ready to Make a Difference?</h2>
+        <p class="lead mb-4">Apply to join this camp today or explore other volunteer opportunities.</p>
+        {% if user.is_authenticated %}
+            {% if not user_has_applied and camp.is_registration_open %}
+                <a href="{% url 'apply_to_camp' camp.id %}" class="btn btn-light btn-lg">Apply Now</a>
+            {% endif %}
+        {% else %}
+            <a href="{% url 'register' %}" class="btn btn-light btn-lg">Register & Apply</a>
+        {% endif %}
+        <a href="{% url 'camp_list' %}" class="btn btn-outline-light btn-lg ms-2">Explore More Camps</a>
+    </div>
+</section>
+{% endblock %}

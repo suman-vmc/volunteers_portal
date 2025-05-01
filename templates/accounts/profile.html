@@ -1,0 +1,341 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - Eco Volunteers{% endblock %}
+
+{% block content %}
+<!-- Profile Hero Section -->
+<section class="hero" style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://source.unsplash.com/1600x900/?nature,profile');">
+    <div class="container">
+        <h1>My Volunteer Profile</h1>
+        <p>Manage your personal information and volunteer activities</p>
+    </div>
+</section>
+
+<!-- Profile Content Section -->
+<section class="section">
+    <div class="container">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3 mb-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="avatar-circle mb-3 mx-auto">
+                            <span class="avatar-initials">{{ user.first_name|first }}{{ user.last_name|first }}</span>
+                        </div>
+                        <h4 class="mb-1">{{ user.get_full_name }}</h4>
+                        <p class="text-muted mb-3">@{{ user.username }}</p>
+                        
+                        <hr>
+                        
+                        <div class="profile-stats">
+                            <div class="row text-center">
+                                <div class="col-6 mb-3">
+                                    <h5 class="mb-0">{{ user.applications.count }}</h5>
+                                    <small class="text-muted">Applications</small>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <h5 class="mb-0">{{ approved_count }}</h5>
+                                    <small class="text-muted">Participations</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <a href="{% url 'my_applications' %}" class="btn btn-outline w-100 mb-2">My Applications</a>
+                        <a href="{% url 'add_testimonial' %}" class="btn btn-outline w-100">Add Testimonial</a>
+                    </div>
+                </div>
+                
+                <div class="list-group mt-4">
+                    <a href="#personal-info" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-user me-2"></i> Personal Information
+                    </a>
+                    <a href="#emergency-contact" class="list-group-item list-group-item-action">
+                        <i class="fas fa-phone-alt me-2"></i> Emergency Contact
+                    </a>
+                    <a href="#skills-experience" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tools me-2"></i> Skills & Experience
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Profile Content -->
+            <div class="col-lg-9">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="card-title mb-0">Profile Information</h2>
+                            <span class="badge bg-primary">Volunteer</span>
+                        </div>
+                        
+                        <p class="text-muted mb-4">
+                            Keep your profile information up to date. This information helps us ensure a safe and enjoyable volunteer experience.
+                        </p>
+                        
+                        <form method="post" novalidate>
+                            {% csrf_token %}
+                            
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger">
+                                    {{ form.non_field_errors }}
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Personal Information -->
+                            <div id="personal-info" class="mb-4">
+                                <h4 class="mb-3">Personal Information</h4>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">First Name</label>
+                                        <input type="text" class="form-control" value="{{ user.first_name }}" disabled>
+                                        <div class="form-text">To change your name, please contact support.</div>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Last Name</label>
+                                        <input type="text" class="form-control" value="{{ user.last_name }}" disabled>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" value="{{ user.email }}" disabled>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ form.phone.id_for_label }}" class="form-label">
+                                            Phone Number <span class="text-danger">*</span>
+                                        </label>
+                                        {{ form.phone }}
+                                        {% if form.phone.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.phone.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ form.date_of_birth.id_for_label }}" class="form-label">
+                                            Date of Birth <span class="text-danger">*</span>
+                                        </label>
+                                        {{ form.date_of_birth }}
+                                        {% if form.date_of_birth.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.date_of_birth.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ form.gender.id_for_label }}" class="form-label">
+                                            Gender
+                                        </label>
+                                        {{ form.gender }}
+                                        {% if form.gender.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.gender.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ form.address.id_for_label }}" class="form-label">
+                                        Address <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.address }}
+                                    {% if form.address.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.address.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Emergency Contact -->
+                            <div id="emergency-contact" class="mb-4">
+                                <h4 class="mb-3">Emergency Contact</h4>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ form.emergency_contact.id_for_label }}" class="form-label">
+                                            Emergency Contact Name
+                                        </label>
+                                        {{ form.emergency_contact }}
+                                        {% if form.emergency_contact.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.emergency_contact.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ form.emergency_phone.id_for_label }}" class="form-label">
+                                            Emergency Contact Phone
+                                        </label>
+                                        {{ form.emergency_phone }}
+                                        {% if form.emergency_phone.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.emergency_phone.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Skills & Experience -->
+                            <div id="skills-experience" class="mb-4">
+                                <h4 class="mb-3">Skills & Experience</h4>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ form.skills.id_for_label }}" class="form-label">
+                                        Skills
+                                    </label>
+                                    {{ form.skills }}
+                                    {% if form.skills.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.skills.errors }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text">
+                                        List any skills that might be relevant to environmental volunteering (e.g., gardening, wildlife identification, photography, teaching).
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ form.experience.id_for_label }}" class="form-label">
+                                        Previous Volunteer Experience
+                                    </label>
+                                    {{ form.experience }}
+                                    {% if form.experience.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.experience.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Account Security Section -->
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">Account Security</h3>
+                        
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0">Password</h5>
+                                <a href="#" class="btn btn-sm btn-outline">Change Password</a>
+                            </div>
+                            <p class="text-muted">Last changed: Never</p>
+                        </div>
+                        
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0">Account Deletion</h5>
+                            </div>
+                            <p class="text-muted">If you delete your account, all of your personal information will be permanently removed.</p>
+                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                                Delete Account
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAccountModalLabel">Confirm Account Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i> Warning: This action cannot be undone.
+                </div>
+                <p>Are you sure you want to delete your account? This will permanently remove all your personal information and volunteer history.</p>
+                
+                <form>
+                    <div class="form-group mb-3">
+                        <label for="delete-confirmation" class="form-label">Type "DELETE" to confirm:</label>
+                        <input type="text" class="form-control" id="delete-confirmation" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirm-delete" disabled>Delete Account</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Control delete account button based on confirmation text
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteConfirmationInput = document.getElementById('delete-confirmation');
+        const confirmDeleteButton = document.getElementById('confirm-delete');
+        
+        if (deleteConfirmationInput && confirmDeleteButton) {
+            deleteConfirmationInput.addEventListener('input', function() {
+                confirmDeleteButton.disabled = (this.value !== 'DELETE');
+            });
+        }
+        
+        // Make sidebar links scroll smoothly to sections
+        document.querySelectorAll('.list-group-item').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 100,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Update active class
+                    document.querySelectorAll('.list-group-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+<style>
+    .avatar-circle {
+        width: 100px;
+        height: 100px;
+        background-color: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .avatar-initials {
+        color: white;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

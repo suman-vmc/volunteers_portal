@@ -1,0 +1,420 @@
+{% extends 'base.html' %}
+
+{% block title %}Review Application - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-2 p-0">
+                <div class="admin-sidebar">
+                    <div class="p-3 text-white text-center mb-4">
+                        <h4 class="mb-1">Admin Dashboard</h4>
+                        <p class="mb-0 small">Welcome, {{ user.username }}</p>
+                    </div>
+                    
+                    <a href="{% url 'admin_dashboard' %}" class="admin-sidebar-link">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="{% url 'admin_manage_camps' %}" class="admin-sidebar-link">
+                        <i class="fas fa-campground me-2"></i> Manage Camps
+                    </a>
+                    <a href="{% url 'admin_manage_volunteers' %}" class="admin-sidebar-link">
+                        <i class="fas fa-users me-2"></i> Manage Volunteers
+                    </a>
+                    <a href="{% url 'admin_manage_applications' %}" class="admin-sidebar-link active">
+                        <i class="fas fa-clipboard-list me-2"></i> Applications
+                    </a>
+                    <a href="{% url 'admin_manage_testimonials' %}" class="admin-sidebar-link">
+                        <i class="fas fa-comment me-2"></i> Testimonials
+                    </a>
+                    <hr class="bg-light opacity-25 mx-3">
+                    <a href="{% url 'admin:index' %}" class="admin-sidebar-link" target="_blank">
+                        <i class="fas fa-tools me-2"></i> Django Admin
+                    </a>
+                    <a href="{% url 'home' %}" class="admin-sidebar-link">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Site
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-10">
+                <div class="admin-content">
+                    <div class="mb-4">
+                        <a href="{% url 'admin_manage_applications' %}" class="btn btn-outline mb-2">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Applications
+                        </a>
+                        <h1 class="mb-0">Review Application</h1>
+                        <p class="text-muted">Reviewing application from {{ application.volunteer.get_full_name }} for {{ application.camp.name }}</p>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Volunteer and Camp Information -->
+                        <div class="col-lg-4 mb-4">
+                            <div class="card mb-4">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-user me-2"></i> Volunteer Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="avatar-circle me-3" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                                            <span class="avatar-initials">{{ application.volunteer.first_name|first }}{{ application.volunteer.last_name|first }}</span>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-0">{{ application.volunteer.get_full_name }}</h5>
+                                            <p class="text-muted mb-0">@{{ application.volunteer.username }}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <div class="text-muted small mb-1">Email Address</div>
+                                        <p class="mb-0">{{ application.volunteer.email }}</p>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <div class="text-muted small mb-1">Phone Number</div>
+                                        <p class="mb-0">{{ application.volunteer.profile.phone }}</p>
+                                    </div>
+                                    
+                                    {% if application.volunteer.profile.age %}
+                                    <div class="mb-3">
+                                        <div class="text-muted small mb-1">Age</div>
+                                        <p class="mb-0">{{ application.volunteer.profile.age }} years</p>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="mb-3">
+                                        <div class="text-muted small mb-1">Gender</div>
+                                        <p class="mb-0">
+                                            {% if application.volunteer.profile.gender == 'M' %}
+                                                Male
+                                            {% elif application.volunteer.profile.gender == 'F' %}
+                                                Female
+                                            {% elif application.volunteer.profile.gender == 'O' %}
+                                                Other
+                                            {% else %}
+                                                Not specified
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    
+                                    <hr>
+                                    
+                                    <a href="#volunteerModal" data-bs-toggle="modal" data-bs-target="#volunteerModal" class="btn btn-outline w-100">
+                                        <i class="fas fa-user me-1"></i> View Full Profile
+                                    </a>
+                                    
+                                    <!-- Volunteer Modal -->
+                                    <div class="modal fade" id="volunteerModal" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Volunteer Profile</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-md-4 text-center mb-4 mb-md-0">
+                                                            <div class="avatar-circle mx-auto mb-3" style="width: 120px; height: 120px; font-size: 3rem;">
+                                                                <span class="avatar-initials">{{ application.volunteer.first_name|first }}{{ application.volunteer.last_name|first }}</span>
+                                                            </div>
+                                                            
+                                                            <h4 class="mb-1">{{ application.volunteer.get_full_name }}</h4>
+                                                            <p class="text-muted mb-3">@{{ application.volunteer.username }}</p>
+                                                            
+                                                            <div class="d-flex justify-content-center">
+                                                                <span class="badge bg-success me-2">
+                                                                    {{ application.volunteer.applications.filter(status='APPROVED').count }} Approved
+                                                                </span>
+                                                                <span class="badge bg-primary">
+                                                                    Joined {{ application.volunteer.profile.created_at|date:"M Y" }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="col-md-8">
+                                                            <h5 class="border-bottom pb-2 mb-3">Personal Information</h5>
+                                                            
+                                                            <div class="row mb-3">
+                                                                <div class="col-sm-4 text-muted">Full Name:</div>
+                                                                <div class="col-sm-8">{{ application.volunteer.get_full_name }}</div>
+                                                            </div>
+                                                            
+                                                            <div class="row mb-3">
+                                                                <div class="col-sm-4 text-muted">Email:</div>
+                                                                <div class="col-sm-8">{{ application.volunteer.email }}</div>
+                                                            </div>
+                                                            
+                                                            <div class="row mb-3">
+                                                                <div class="col-sm-4 text-muted">Phone:</div>
+                                                                <div class="col-sm-8">{{ application.volunteer.profile.phone }}</div>
+                                                            </div>
+                                                            
+                                                            <div class="row mb-3">
+                                                                <div class="col-sm-4 text-muted">Address:</div>
+                                                                <div class="col-sm-8">{{ application.volunteer.profile.address }}</div>
+                                                            </div>
+                                                            
+                                                            <div class="row mb-3">
+                                                                <div class="col-sm-4 text-muted">Date of Birth:</div>
+                                                                <div class="col-sm-8">
+                                                                    {% if application.volunteer.profile.date_of_birth %}
+                                                                        {{ application.volunteer.profile.date_of_birth|date:"F d, Y" }} ({{ application.volunteer.profile.age }} years)
+                                                                    {% else %}
+                                                                        Not provided
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="row mb-3">
+                                                                <div class="col-sm-4 text-muted">Gender:</div>
+                                                                <div class="col-sm-8">
+                                                                    {% if application.volunteer.profile.gender == 'M' %}
+                                                                        Male
+                                                                    {% elif application.volunteer.profile.gender == 'F' %}
+                                                                        Female
+                                                                    {% elif application.volunteer.profile.gender == 'O' %}
+                                                                        Other
+                                                                    {% else %}
+                                                                        Not specified
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <h5 class="border-bottom pb-2 mb-3 mt-4">Emergency Contact</h5>
+                                                            
+                                                            <div class="row mb-3">
+                                                                <div class="col-sm-4 text-muted">Name:</div>
+                                                                <div class="col-sm-8">
+                                                                    {{ application.volunteer.profile.emergency_contact|default:"Not provided" }}
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="row mb-3">
+                                                                <div class="col-sm-4 text-muted">Phone:</div>
+                                                                <div class="col-sm-8">
+                                                                    {{ application.volunteer.profile.emergency_phone|default:"Not provided" }}
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <h5 class="border-bottom pb-2 mb-3 mt-4">Skills & Experience</h5>
+                                                            
+                                                            <div class="row mb-3">
+                                                                <div class="col-sm-4 text-muted">Skills:</div>
+                                                                <div class="col-sm-8">
+                                                                    {% if application.volunteer.profile.skills %}
+                                                                        {{ application.volunteer.profile.skills }}
+                                                                    {% else %}
+                                                                        Not provided
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="row mb-3">
+                                                                <div class="col-sm-4 text-muted">Experience:</div>
+                                                                <div class="col-sm-8">
+                                                                    {% if application.volunteer.profile.experience %}
+                                                                        {{ application.volunteer.profile.experience }}
+                                                                    {% else %}
+                                                                        Not provided
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-campground me-2"></i> Camp Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        {% if application.camp.image %}
+                                            <img src="{{ application.camp.image.url }}" alt="{{ application.camp.name }}" class="img-fluid rounded mb-3">
+                                        {% else %}
+                                            <img src="https://source.unsplash.com/800x500/?nature,environment" alt="Camp image" class="img-fluid rounded mb-3">
+                                        {% endif %}
+                                        <h5 class="mb-1">{{ application.camp.name }}</h5>
+                                        <p class="text-muted small">
+                                            <i class="fas fa-map-marker-alt me-1"></i> {{ application.camp.location }}
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <div class="text-muted small mb-1">Dates</div>
+                                        <p class="mb-0">{{ application.camp.start_date|date:"F d, Y" }} - {{ application.camp.end_date|date:"F d, Y" }}</p>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <div class="text-muted small mb-1">Volunteers</div>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-2">{{ application.camp.get_registered_volunteers_count }}/{{ application.camp.max_volunteers }}</div>
+                                            <div class="progress flex-grow-1" style="height: 6px;">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ application.camp.get_registered_volunteers_count|floatformat:0 }}%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <div class="text-muted small mb-1">Status</div>
+                                        <p class="mb-0">
+                                            {% if application.camp.is_active %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    
+                                    <hr>
+                                    
+                                    <a href="{% url 'camp_detail' application.camp.id %}" class="btn btn-outline w-100" target="_blank">
+                                        <i class="fas fa-external-link-alt me-1"></i> View Camp Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Application Details -->
+                        <div class="col-lg-8">
+                            <div class="card mb-4">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-clipboard-list me-2"></i> Application Details</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <h6 class="text-muted mb-2">Application Status</h6>
+                                        <div>
+                                            {% if application.status == 'PENDING' %}
+                                                <span class="badge bg-warning p-2">Pending Review</span>
+                                            {% elif application.status == 'APPROVED' %}
+                                                <span class="badge bg-success p-2">Approved</span>
+                                            {% elif application.status == 'REJECTED' %}
+                                                <span class="badge bg-danger p-2">Rejected</span>
+                                            {% elif application.status == 'WAITLISTED' %}
+                                                <span class="badge bg-info p-2">Waitlisted</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <h6 class="text-muted mb-2">Application Date</h6>
+                                        <p>{{ application.created_at|date:"F d, Y" }} at {{ application.created_at|time:"g:i A" }}</p>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <h6 class="text-muted mb-2">Volunteer's Motivation</h6>
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <p class="mb-0">{{ application.motivation }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if application.dietary_restrictions %}
+                                    <div class="mb-4">
+                                        <h6 class="text-muted mb-2">Dietary Restrictions</h6>
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <p class="mb-0">{{ application.dietary_restrictions }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if application.medical_conditions %}
+                                    <div class="mb-4">
+                                        <h6 class="text-muted mb-2">Medical Conditions</h6>
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <p class="mb-0">{{ application.medical_conditions }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Application Decision Form -->
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-clipboard-check me-2"></i> Application Review</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        
+                                        <div class="form-group mb-4">
+                                            <label for="{{ form.status.id_for_label }}" class="form-label">
+                                                Application Status <span class="text-danger">*</span>
+                                            </label>
+                                            {{ form.status }}
+                                            {% if form.status.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.status.errors }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="form-group mb-4">
+                                            <label for="{{ form.admin_notes.id_for_label }}" class="form-label">
+                                                Admin Notes
+                                            </label>
+                                            {{ form.admin_notes }}
+                                            {% if form.admin_notes.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.admin_notes.errors }}
+                                                </div>
+                                            {% endif %}
+                                            <div class="form-text">These notes are only visible to administrators, not to the volunteer.</div>
+                                        </div>
+                                        
+                                        <div class="alert alert-info mb-4">
+                                            <i class="fas fa-info-circle me-2"></i> The volunteer will be automatically notified by email when you update their application status.
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between">
+                                            <a href="{% url 'admin_manage_applications' %}" class="btn btn-outline">Cancel</a>
+                                            <div>
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="fas fa-save me-1"></i> Save Changes
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-circle {
+        background-color: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .avatar-initials {
+        color: white;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
